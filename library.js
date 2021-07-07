@@ -15,8 +15,8 @@ const theHobbit = new Book('The Hobbit', 'J.R.R. Tolkien', 295, 'not read yet')
 
 
 myLibrary.push(theHobbit); //push a book to library array
-
 console.log(myLibrary);
+
 
 function addBookToLibrary(){
     let title = window.prompt('What is the title?');
@@ -28,10 +28,9 @@ function addBookToLibrary(){
 };
 
 
-
+function displayTable(){
 
 myLibrary.forEach(book => {
-    
     //loop through myLibrary and display books in table
     const tr = document.createElement('tr');
     const tdTitle = document.createElement('td');
@@ -51,30 +50,19 @@ myLibrary.forEach(book => {
     tr.appendChild(tdAuthor);
     tr.appendChild(tdPages);
     tr.appendChild(tdRead);
+    }); 
+};
+
+const newBook = document.querySelector('#new-book');
+newBook.addEventListener('click', () => {
+    document.getElementById("popup-form").style.display = "block";
 });
 
-/* //For in is for objects properties not arrays
-for (let book in myLibrary){ 
-    
 
-    console.log(book);
-    //loop through myLibrary and display books in table
-    const tr = document.createElement('tr');
-    const tdTitle = document.createElement('td');
-    const tdAuthor = document.createElement('td');
-    const tdPages = document.createElement('td');
-    const tdRead = document.createElement('td');
-    const bookTable = document.querySelector('#book-table');
+const closeButton = document.querySelector('#close-button');
+closeButton.addEventListener('click', () => {
+    document.getElementById("popup-form").style.display = "none";
+});
+  
 
-    tdTitle.textContent = book.title;
-    tdAuthor.textContent = book.author;
-    tdPages.textContent = book.pages;
-    tdRead.textContent = book.read;
-
-
-    bookTable.appendChild(tr);
-    tr.appendChild(tdTitle);
-    tr.appendChild(tdAuthor);
-    tr.appendChild(tdPages);
-    tr.appendChild(tdRead);
-    */
+displayTable();

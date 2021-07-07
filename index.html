@@ -6,6 +6,30 @@
   </head>
 
   <body>
+    <button id='new-book'>NEW BOOK</button>
+    <form action="/action_page.php" id="popup-form">
+    
+      <label class='form-element' for="text"><b>Title</b></label>
+      <input class='form-element' type="text" placeholder="Enter Title" name="title" required>
+  
+      <label class='form-element' for="text"><b>Author</b></label>
+      <input class='form-element' type="text" placeholder="Enter Author" name="author" required>
+
+      <label class='form-element' for="number"><b>Pages</b></label>
+      <input class='form-element' type="number" placeholder="Enter Pages" name="pages" required>
+
+     
+      <label class='form-element' for="text">Has been read</label><br>
+      <input class='form-element' type="radio" name="read" value="Has been read">
+      <label class='form-element' for="text">Has not been read</label><br>
+      <input class='form-element' type="radio" name="read" value="Hasn't been read yet">
+
+  
+      <button class='form-element' type="submit">Add Book</button>
+      <button class='form-element' type="submit" id='close-button'>Close</button>
+
+      </form>
+    </div>
     <table id='book-table' style="width:100%">
         <tr>
           <th>Title</th>

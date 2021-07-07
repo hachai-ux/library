@@ -1,3 +1,26 @@
 tr {
     text-align: left;
 }
+
+#popup-form {
+    display: none;
+    border: 3px solid #f1f1f1;
+    z-index: 9;
+    max-width: 300px;
+    padding: 10px;
+    background-color: white;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    height: 50%
+}
+
+.form-element {
+    display: block;
+    width: 70%;
+    padding: 5px;
+    margin: 0 10px 0 10px;
+   
+}
