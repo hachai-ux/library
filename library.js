@@ -22,7 +22,7 @@ console.log(myLibrary);
 function addBookToLibrary(title, author, pages, read){
     let book = new Book(title, author, pages, read);
     myLibrary.push(book);
-    console.log(title);
+    console.log(myLibrary);
 };
 
 
@@ -51,6 +51,36 @@ myLibrary.forEach(book => {
     }); 
 };
 
+function addLastToTable(){
+
+    let lastBook = myLibrary.slice(-1)[0];
+        console.log(lastBook);
+    
+        //loop through myLibrary and display books in table
+        const tr = document.createElement('tr');
+        const tdTitle = document.createElement('td');
+        const tdAuthor = document.createElement('td');
+        const tdPages = document.createElement('td');
+        const tdRead = document.createElement('td');
+        const bookTable = document.querySelector('#book-table');
+    
+        tdTitle.textContent = lastBook.title;
+        tdAuthor.textContent = lastBook.author;
+        tdPages.textContent = lastBook.pages;
+        tdRead.textContent = lastBook.read;
+
+       
+    
+        bookTable.appendChild(tr);
+        tr.appendChild(tdTitle);
+        tr.appendChild(tdAuthor);
+        tr.appendChild(tdPages);
+        tr.appendChild(tdRead);
+       
+        //only append newly created book
+    };
+    
+
 const newBook = document.querySelector('#new-book');
 newBook.addEventListener('click', () => {
     document.getElementById("popup-form").style.display = "block";
@@ -70,7 +100,10 @@ submitForm.addEventListener('submit', () => {
     let author = submitForm.elements['author'].value;
     let pages = submitForm.elements['pages'].value;
     let read = submitForm.elements['read'].value;
-    addBookToLibrary(title, author, pages, author);
+    addBookToLibrary(title, author, pages, read);
+    document.getElementById("popup-form").style.display = "none";
+    addLastToTable();
+  
     
 });
   
