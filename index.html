@@ -7,7 +7,7 @@
 
   <body>
     <button id='new-book'>NEW BOOK</button>
-    <form action="/action_page.php" id="popup-form">
+    <form id="popup-form">
     
       <label class='form-element' for="text"><b>Title</b></label>
       <input class='form-element' type="text" placeholder="Enter Title" name="title" required>
@@ -20,9 +20,9 @@
 
      
       <label class='form-element' for="text">Has been read</label><br>
-      <input class='form-element' type="radio" name="read" value="Has been read">
+      <input class='form-element' type="radio" name="read" value="Has been read" required>
       <label class='form-element' for="text">Has not been read</label><br>
-      <input class='form-element' type="radio" name="read" value="Hasn't been read yet">
+      <input class='form-element' type="radio" name="read" value="Hasn't been read yet" required>
 
   
       <button class='form-element' type="submit">Add Book</button>

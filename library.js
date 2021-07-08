@@ -1,4 +1,5 @@
 let myLibrary = [];
+console.log(myLibrary);
 
 function Book(title, author, pages, read){ 
     //the constructor
@@ -18,13 +19,10 @@ myLibrary.push(theHobbit); //push a book to library array
 console.log(myLibrary);
 
 
-function addBookToLibrary(){
-    let title = window.prompt('What is the title?');
-    let author = window.prompt('Who is the author?');
-    let pages = parseInt(window.prompt('How many pages does it have?'));
-    let read = window.prompt('Did you read it yet?', 'not read yet');
+function addBookToLibrary(title, author, pages, read){
     let book = new Book(title, author, pages, read);
     myLibrary.push(book);
+    console.log(title);
 };
 
 
@@ -62,6 +60,18 @@ newBook.addEventListener('click', () => {
 const closeButton = document.querySelector('#close-button');
 closeButton.addEventListener('click', () => {
     document.getElementById("popup-form").style.display = "none";
+});
+  
+const submitForm = document.querySelector('#popup-form');
+
+submitForm.addEventListener('submit', () => {
+    
+    let title = submitForm.elements['title'].value;
+    let author = submitForm.elements['author'].value;
+    let pages = submitForm.elements['pages'].value;
+    let read = submitForm.elements['read'].value;
+    addBookToLibrary(title, author, pages, author);
+    
 });
   
 
