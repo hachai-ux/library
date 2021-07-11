@@ -37,6 +37,13 @@ myLibrary.forEach(book => {
     const tdRead = document.createElement('td');
     const bookTable = document.querySelector('#book-table');
 
+
+    //remove button
+    const removeButton = document.createElement('button');
+    removeButton.textContent = 'Remove';
+    removeButton.setAttribute('data-index', myLibrary.indexOf(book));
+
+
     tdTitle.textContent = book.title;
     tdAuthor.textContent = book.author;
     tdPages.textContent = book.pages;
@@ -48,6 +55,9 @@ myLibrary.forEach(book => {
     tr.appendChild(tdAuthor);
     tr.appendChild(tdPages);
     tr.appendChild(tdRead);
+    tr.appendChild(removeButton);
+
+    console.log(removeButton.getAttribute('data-index'));
     }); 
 };
 
@@ -63,6 +73,7 @@ function addLastToTable(){
         const tdPages = document.createElement('td');
         const tdRead = document.createElement('td');
         const bookTable = document.querySelector('#book-table');
+        const removeButton = document.createElement('button');
     
         tdTitle.textContent = lastBook.title;
         tdAuthor.textContent = lastBook.author;
@@ -76,8 +87,16 @@ function addLastToTable(){
         tr.appendChild(tdAuthor);
         tr.appendChild(tdPages);
         tr.appendChild(tdRead);
+        tr.appendChild(removeButton);
        
         //only append newly created book
+
+        //eventlistener for remove button
+        removeButton.dataset.index;
+        removeButton.addEventListener('click', () => {
+            bookTable.removeChild(tr);
+        });
+        
     };
     
 
@@ -106,6 +125,9 @@ submitForm.addEventListener('submit', () => {
   
     
 });
+
+
+
   
 
 displayTable();
