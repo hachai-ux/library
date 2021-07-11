@@ -1,5 +1,5 @@
 let myLibrary = [];
-console.log(myLibrary);
+
 
 function Book(title, author, pages, read){ 
     //the constructor
@@ -16,13 +16,13 @@ const theHobbit = new Book('The Hobbit', 'J.R.R. Tolkien', 295, 'not read yet')
 
 
 myLibrary.push(theHobbit); //push a book to library array
-console.log(myLibrary);
+
 
 
 function addBookToLibrary(title, author, pages, read){
     let book = new Book(title, author, pages, read);
     myLibrary.push(book);
-    console.log(myLibrary);
+   
 };
 
 
@@ -41,8 +41,17 @@ myLibrary.forEach(book => {
     //remove button
     const removeButton = document.createElement('button');
     removeButton.textContent = 'Remove';
+    removeButton.setAttribute('class', 'remove-button');
     removeButton.setAttribute('data-index', myLibrary.indexOf(book));
 
+/*
+    //eventlistener for remove button
+       
+    removeButton.addEventListener('click', () => {
+        bookTable.removeChild(tr);
+        myLibrary.splice(myLibrary.indexOf(book))
+    });
+*/
 
     tdTitle.textContent = book.title;
     tdAuthor.textContent = book.author;
@@ -56,15 +65,13 @@ myLibrary.forEach(book => {
     tr.appendChild(tdPages);
     tr.appendChild(tdRead);
     tr.appendChild(removeButton);
-
-    console.log(removeButton.getAttribute('data-index'));
     }); 
 };
 
 function addLastToTable(){
 
     let lastBook = myLibrary.slice(-1)[0];
-        console.log(lastBook);
+      
     
         //loop through myLibrary and display books in table
         const tr = document.createElement('tr');
@@ -73,13 +80,21 @@ function addLastToTable(){
         const tdPages = document.createElement('td');
         const tdRead = document.createElement('td');
         const bookTable = document.querySelector('#book-table');
+
+
         const removeButton = document.createElement('button');
-    
+        removeButton.textContent = 'Remove';
+        removeButton.setAttribute('class', 'remove-button');
+        removeButton.setAttribute('data-index', myLibrary.indexOf(lastBook));
+
+
         tdTitle.textContent = lastBook.title;
         tdAuthor.textContent = lastBook.author;
         tdPages.textContent = lastBook.pages;
         tdRead.textContent = lastBook.read;
 
+
+        
        
     
         bookTable.appendChild(tr);
@@ -91,11 +106,7 @@ function addLastToTable(){
        
         //only append newly created book
 
-        //eventlistener for remove button
-        removeButton.dataset.index;
-        removeButton.addEventListener('click', () => {
-            bookTable.removeChild(tr);
-        });
+        
         
     };
     
@@ -126,8 +137,33 @@ submitForm.addEventListener('submit', () => {
     
 });
 
+//listener für remove button - event bubbling
+const bookTable = document.querySelector('#book-table');
+bookTable.addEventListener('click', (e)=>{
+    console.log(e.target);
+    console.log(e.target.getAttribute('data-index'));
+    //only remove if remove button is clicked/not when bookTable is clicked
+    if(e.target.getAttribute('class') === 'remove-button'){
+    myLibrary.splice(myLibrary.indexOf(parseInt(e.target.getAttribute('data-index')),1));
+    bookTable.removeChild(e.target.parentNode);
+    }
+    console.log(myLibrary);
+
+    //re-assign data-indexes for dom elements
+    removeButtonsNodeList = document.querySelectorAll('.remove-button');
+    removeButtonsArray = Array.from(removeButtonsNodeList);
+    removeButtonsArray.forEach(button => {
+        button.setAttribute('data-index', removeButtonsArray.indexOf(button));
+    });
+
+
+    console.log(removeButtonsArray);
+       
+});
+
 
 
   
 
 displayTable();
+y
