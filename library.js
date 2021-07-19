@@ -1,28 +1,30 @@
 let myLibrary = [];
 
 
-function Book(title, author, pages, read){ 
-    //the constructor
-    this.title = title
-    this.author = author
-    this.pages = pages
-    this.read = read
-    this.info = function() {
-        return this.title + " by " + this.author + ", " + this.pages + " pages, " + this.read
+class Book { 
+    //the constructor(using classes)
+    constructor(title, author, pages, read){
+        this.title = title
+        this.author = author
+        this.pages = pages
+        this.read = read
+        this.info = function() {
+            return this.title + " by " + this.author + ", " + this.pages + " pages, " + this.read
+            }
+    }
+
+    changeReadStatus(){
+        if(this.read === true){
+            this.read = false;
         }
+        else if(this.read === false){
+            this.read = true;
+        }
+    }
+    
 }
 
-//add function to book prototype instance
-Book.prototype.changeReadStatus = function() {
-    if(this.read === true){
-        this.read = false;
-    }
-    else if(this.read === false){
-        this.read = true;
-    }
-
-
-  }
+  
 const theHobbit = new Book('The Hobbit', 'J.R.R. Tolkien', 295, true);
 //console.log(theHobbit.info())
 
