@@ -162,6 +162,7 @@ async function toggleReadStatus(e) {
         const readStatus = await getBookReadData(id);
         await updateBookReadDataOnDatabase(id, readStatus);
         changeReadStatus(id);
+        //fetching data back and forth probably not optimal
     }
 };
 
