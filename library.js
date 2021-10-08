@@ -1,48 +1,82 @@
-let myLibrary = [];
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js';
 
 
-class Book { 
-    //the constructor(using classes)
-    constructor(title, author, pages, read){
-        this.title = title
-        this.author = author
-        this.pages = pages
-        this.read = read
-        this.info = function() {
-            return this.title + " by " + this.author + ", " + this.pages + " pages, " + this.read
-            }
-    }
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDUJlN3l4B7wCRRE7zvv7EhJSwctMCKjJY",
+  authDomain: "library-e07dc.firebaseapp.com",
+  projectId: "library-e07dc",
+  storageBucket: "library-e07dc.appspot.com",
+  messagingSenderId: "988865219011",
+  appId: "1:988865219011:web:c5b982d83431c12ac1d576"
+};
 
-    changeReadStatus(){
-        if(this.read === true){
-            this.read = false;
-        }
-        else if(this.read === false){
-            this.read = true;
-        }
-    }
-    
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+//specified firestore app
+const db = getFirestore(app);
+
+
+// Loads books history and listens for upcoming ones.
+function loadBooks() {
+  // Create the query to load the last books and listen for new ones.
+  const recentBooksQuery = query(collection(getFirestore(), 'books'), orderBy('timestamp', 'asc'));
+  
+  // Start listening to the query.
+    onSnapshot(recentBooksQuery, function (snapshot) {
+    snapshot.docChanges().forEach(function(change) {
+      if (change.type === 'removed') {
+        deleteBook(change.doc.id);
+      } else {
+          //check if local or server
+          const source = change.doc.metadata.hasPendingWrites ? "Local" : "Server";
+          var book = change.doc.data();
+          if (source === "Server") {
+                displayBook(change.doc.id, book.title,
+                      book.author, book.pages, book.read);
+          }
+      }
+    });
+  });
 }
 
+
+// Saves a new message to Cloud Firestore.
+async function saveBook(title, author, pages, read) {
+  // Add a new book entry to the Firebase database.
+    try {
+    await addDoc(collection(getFirestore(), 'books'), {
+      title: title,
+      author: author,
+      pages: pages,
+      read: read,
+      timestamp: serverTimestamp()
+    });
+  }
+  catch(error) {
+    console.error('Error writing new book to Firebase Database', error);
+  }
+}
+
+
+
+
   
-const theHobbit = new Book('The Hobbit', 'J.R.R. Tolkien', 295, true);
+//const theHobbit = new Book('The Hobbit', 'J.R.R. Tolkien', 295, true);
 //console.log(theHobbit.info())
 
 
-myLibrary.push(theHobbit); //push a book to library array
+//myLibrary.push(theHobbit); //push a book to library array
 
 
 
-function addBookToLibrary(title, author, pages, read){
-    let book = new Book(title, author, pages, read);
-    myLibrary.push(book);
-   
-};
+function displayBook(id, title, author, pages, read){
 
-
-function displayTable(){
-
-myLibrary.forEach(book => {
     //loop through myLibrary and display books in table
     const tr = document.createElement('tr');
     const tdTitle = document.createElement('td');
@@ -62,27 +96,16 @@ myLibrary.forEach(book => {
     const removeButton = document.createElement('button');
     removeButton.textContent = 'Remove';
     removeButton.setAttribute('class', 'remove-button');
-    tr.setAttribute('data-index', myLibrary.indexOf(book));
-
-   
+    tr.setAttribute('id', id);
 
 
-/*
-    //eventlistener for remove button
-       
-    removeButton.addEventListener('click', () => {
-        bookTable.removeChild(tr);
-        myLibrary.splice(myLibrary.indexOf(book))
-    });
-*/
-
-    tdTitle.textContent = book.title;
-    tdAuthor.textContent = book.author;
-    tdPages.textContent = book.pages;
-    if(book.read === true){
+    tdTitle.textContent = title;
+    tdAuthor.textContent = author;
+    tdPages.textContent = pages;
+    if(read === true){
         tdRead.textContent = 'Has been read'
     }
-    else if (book.read === false){
+    else if (read === false){
         tdRead.textContent = 'Has not been read'
     }
  
@@ -95,9 +118,9 @@ myLibrary.forEach(book => {
     tr.appendChild(tdRead);
     tr.appendChild(readButton);
     tr.appendChild(removeButton);
-    }); 
 };
 
+/*
 function addLastToTable(){
 
     let lastBook = myLibrary.slice(-1)[0];
@@ -152,6 +175,7 @@ function addLastToTable(){
         
         
     };
+    */
     
 
 const newBook = document.querySelector('#new-book');
@@ -173,32 +197,24 @@ submitForm.addEventListener('submit', () => {
     let author = submitForm.elements['author'].value;
     let pages = submitForm.elements['pages'].value;
     let read = (submitForm.elements['read'].value === 'true'); //convert to boolean
-    addBookToLibrary(title, author, pages, read);
+    saveBook(title, author, pages, read);
     document.getElementById("popup-form").style.display = "none";
-    addLastToTable();
+    
   
     
 });
 
-
-const bookTable = document.querySelector('#book-table');
-bookTable.addEventListener('click', (e)=>{
-    console.log(e.target);
-    console.log(e.target.parentNode.getAttribute('data-index'));
-    //only remove if remove button is clicked/not when bookTable is clicked
-    //listener für remove button - event bubbling
-    if(e.target.getAttribute('class') === 'remove-button'){
-    myLibrary.splice(myLibrary.indexOf(parseInt(e.target.parentNode.getAttribute('data-index')),1));
-    bookTable.removeChild(e.target.parentNode);
+function deleteBook(id) {
+    var book = document.getElementById(id);
+    console.log(book);
+    // If an element for that message exists we delete it.
+    if (book) {
+        book.parentNode.removeChild(book);
     }
-    console.log(myLibrary);
+}
 
-    //re-assign data-indexes for dom elements
-    removeButtonsNodeList = document.querySelectorAll('.remove-button');
-    removeButtonsArray = Array.from(removeButtonsNodeList);
-    removeButtonsArray.forEach(button => {
-        button.parentNode.setAttribute('data-index', removeButtonsArray.indexOf(button));
-    });
+
+/*
 
     //listener for isRead Toggle
     if(e.target.getAttribute('class') === 'read-button'){
@@ -213,8 +229,9 @@ bookTable.addEventListener('click', (e)=>{
             else if (myLibrary[index].read === false){
                 tdRead.textContent = 'Has not been read'
             }
-        }
-});
+        };
+
+*/
    
        
 
@@ -222,5 +239,4 @@ bookTable.addEventListener('click', (e)=>{
 
 
   
-
-displayTable();
+loadBooks();
