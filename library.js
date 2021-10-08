@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js';
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js';
 
 
 // Your web app's Firebase configuration
@@ -120,63 +120,6 @@ function displayBook(id, title, author, pages, read){
     tr.appendChild(removeButton);
 };
 
-/*
-function addLastToTable(){
-
-    let lastBook = myLibrary.slice(-1)[0];
-      
-    
-        //loop through myLibrary and display books in table
-        const tr = document.createElement('tr');
-        const tdTitle = document.createElement('td');
-        const tdAuthor = document.createElement('td');
-        const tdPages = document.createElement('td');
-        const tdRead = document.createElement('td');
-        tdRead.setAttribute('class', 'read-status');
-        const bookTable = document.querySelector('#book-table');
-
-
-        const readButton = document.createElement('button');
-        readButton.textContent = 'Change Read Status';
-        readButton.setAttribute('class', 'read-button');
-
-
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'Remove';
-        removeButton.setAttribute('class', 'remove-button');
-        tr.setAttribute('data-index', myLibrary.indexOf(lastBook));
-
-       
-
-        tdTitle.textContent = lastBook.title;
-        tdAuthor.textContent = lastBook.author;
-        tdPages.textContent = lastBook.pages;
-        if(lastBook.read === true){
-            tdRead.textContent = 'Has been read'
-        }
-        else if (lastBook.read === false){
-            tdRead.textContent = 'Has not been read'
-        }
-
-
-        
-       
-    
-        bookTable.appendChild(tr);
-        tr.appendChild(tdTitle);
-        tr.appendChild(tdAuthor);
-        tr.appendChild(tdPages);
-        tr.appendChild(tdRead);
-        tr.appendChild(readButton);
-        tr.appendChild(removeButton);
-       
-        //only append newly created book
-
-        
-        
-    };
-    */
-    
 
 const newBook = document.querySelector('#new-book');
 newBook.addEventListener('click', () => {
@@ -204,7 +147,24 @@ submitForm.addEventListener('submit', () => {
     
 });
 
+const bookTable = document.querySelector('#book-table');
+bookTable.addEventListener('click', (e) => {
+    //only remove if remove button is clicked/not when bookTable is clicked
+    //listener für remove button - event bubbling
+    if (e.target.getAttribute('class') === 'remove-button') {
+        const id = e.target.parentNode.getAttribute('id');
+        deleteBookFromDatabase(id);
+    }
+});
+   
+   
+
+
+    
+
 function deleteBook(id) {
+    //removes from UI after snapshot change is remove
+    
     var book = document.getElementById(id);
     console.log(book);
     // If an element for that message exists we delete it.
@@ -212,6 +172,16 @@ function deleteBook(id) {
         book.parentNode.removeChild(book);
     }
 }
+
+async function deleteBookFromDatabase(id) {
+    //removes from firestore when removed with button
+
+ await deleteDoc(doc(db, "books", id));
+    
+  
+}
+
+//remove button listener
 
 
 /*
