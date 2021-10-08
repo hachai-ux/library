@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js';
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc, updateDoc, getDoc } from 'https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js';
 
 
 // Your web app's Firebase configuration
@@ -29,12 +29,14 @@ function loadBooks() {
   
   // Start listening to the query.
     onSnapshot(recentBooksQuery, function (snapshot) {
-    snapshot.docChanges().forEach(function(change) {
+        snapshot.docChanges().forEach(function (change) {
+        console.log('Change fired');
       if (change.type === 'removed') {
         deleteBook(change.doc.id);
       } else {
           //check if local or server
           const source = change.doc.metadata.hasPendingWrites ? "Local" : "Server";
+          console.log(source);
           var book = change.doc.data();
           if (source === "Server") {
                 displayBook(change.doc.id, book.title,
@@ -62,17 +64,6 @@ async function saveBook(title, author, pages, read) {
     console.error('Error writing new book to Firebase Database', error);
   }
 }
-
-
-
-
-  
-//const theHobbit = new Book('The Hobbit', 'J.R.R. Tolkien', 295, true);
-//console.log(theHobbit.info())
-
-
-//myLibrary.push(theHobbit); //push a book to library array
-
 
 
 function displayBook(id, title, author, pages, read){
@@ -121,6 +112,7 @@ function displayBook(id, title, author, pages, read){
 };
 
 
+
 const newBook = document.querySelector('#new-book');
 newBook.addEventListener('click', () => {
     document.getElementById("popup-form").style.display = "block";
@@ -153,60 +145,107 @@ bookTable.addEventListener('click', (e) => {
     //listener für remove button - event bubbling
     if (e.target.getAttribute('class') === 'remove-button') {
         const id = e.target.parentNode.getAttribute('id');
-        deleteBookFromDatabase(id);
+        deleteBookOnDatabase(id);
     }
+
+    //async function
+    toggleReadStatus(e);
+
+   
 });
-   
-   
 
+async function toggleReadStatus(e) {
 
-    
-
-function deleteBook(id) {
-    //removes from UI after snapshot change is remove
-    
-    var book = document.getElementById(id);
-    console.log(book);
-    // If an element for that message exists we delete it.
-    if (book) {
-        book.parentNode.removeChild(book);
+     //listener for isRead Toggle
+    if (e.target.getAttribute('class') === 'read-button') {
+        const id = e.target.parentNode.getAttribute('id');
+        const readStatus = await getBookReadData(id);
+        await updateBookReadDataOnDatabase(id, readStatus);
+        changeReadStatus(id);
     }
-}
+};
 
-async function deleteBookFromDatabase(id) {
+
+
+async function getBookReadData(id) {
     //removes from firestore when removed with button
 
- await deleteDoc(doc(db, "books", id));
+    const docSnap = await getDoc(doc(db, "books", id));
+
+    if (docSnap.exists()) {
+        return docSnap.data().read;
+    } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+  
+    }
+};
+   
+
+async function updateBookReadDataOnDatabase(id, readStatus) {
+    console.log(readStatus);
+    if (readStatus === true) {
+        await updateDoc(doc(db, "books", id), {
+            read: false
+        });
+            
+    }
+    else if (readStatus === false) {
+        await updateDoc(doc(db, "books", id), {
+            read: true
+        });
+  
+    }
+        
+}
+    
+async function changeReadStatus(id){
+
+    //queryselector doesn't work with number ids, not valid in css
+    //or use document.querySelector("[id='number']")
+    const parentNode = document.getElementById(id);
+    console.log(id);
+    console.log(parentNode);
+    const tdRead = parentNode.querySelector('.read-status');
+    const readStatus = await getBookReadData(id);
+
+    if(readStatus === true){
+        tdRead.textContent = 'Has been read'
+    }
+    else if (readStatus === false){
+        tdRead.textContent = 'Has not been read'
+    }
+ 
+};
+   
+
+
+
+    function deleteBook(id) {
+        //removes from UI after snapshot change is remove
+    
+        var book = document.getElementById(id);
+        console.log(book);
+        // If an element for that message exists we delete it.
+        if (book) {
+            book.parentNode.removeChild(book);
+        }
+    }
+
+    async function deleteBookOnDatabase(id) {
+        //removes from firestore when removed with button
+
+        await deleteDoc(doc(db, "books", id));
     
   
-}
-
-//remove button listener
+    }
 
 
-/*
 
-    //listener for isRead Toggle
-    if(e.target.getAttribute('class') === 'read-button'){
-            index = e.target.parentNode.getAttribute('data-index');
-            console.log(myLibrary[index].read);
-            myLibrary[index].changeReadStatus();
-            console.log(myLibrary[index].read);
-            tdRead = e.target.parentNode.querySelector('.read-status');
-            if(myLibrary[index].read === true){
-                tdRead.textContent = 'Has been read'
-            }
-            else if (myLibrary[index].read === false){
-                tdRead.textContent = 'Has not been read'
-            }
-        };
 
-*/
-   
-       
 
 
 
 
   
-loadBooks();
+    loadBooks();
